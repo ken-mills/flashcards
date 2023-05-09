@@ -38,8 +38,7 @@ if mode == "T":
 	print("Testing mode")
 	purge_boxes(cwd,'^box\d.json')
 
-
-current_box = input('Which box would you like to study (1,2,3)?: ')
+current_box = input('Which box would you like to study? (1,2,3): ')
 current_box_int = int(current_box)
 
 print("Working on box " + current_box)
@@ -62,11 +61,23 @@ try:
 
 
 except:
-
+# 	No box 1! Might be test mode which deletes boxes.
 	if current_box_int == 1:
-#		print("Creating box1 from words file.")
+		print("Creating box1 from words.csv")
 		with open(words_path, newline='',encoding='utf-8') as csvfile:
 			box = list(csv.reader(csvfile, delimiter=','))
+
+		flip = input('Would you like to study the reverse translation? (Y/N): ')
+		if flip == 'Y':
+			flipped = []
+			for word in box:
+				flipped.append([word[1],word[0]])
+			box = flipped.copy()
+#			print(box[0])
+#
+# 			sys.exit()
+
+
 
 		#find words with multiple translations, in words .csv more than once.
 		with_alternates = []
