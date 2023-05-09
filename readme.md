@@ -10,9 +10,14 @@ The user should study box 1 every day, study box 2 every 2 days, study box 3 eve
 ## Running script
 `py flashcards.py T` - Run in Test mode to delete all boxes.
 
+
 `py flashcards.py P` - Regular run mode
 
 `py flashcards.py R` - Review mode displays the next 20 words from box 1
+
+When running in T mode or running for the first time, the user is asked if they want to flip the translations in order to study the reverse.
+
+
 
 
 ## script notes
