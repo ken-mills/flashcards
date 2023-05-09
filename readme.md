@@ -29,5 +29,5 @@ Vitual card boxes are stored as json files and processed as lists in python
 
 ## Todo
 * Some words are repeated, need to filter. Low priority because the extra practice is good.
-* Flip the translation, from Enlish to French
+
 
