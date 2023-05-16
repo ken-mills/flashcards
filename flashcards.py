@@ -10,8 +10,11 @@ import glob
 def get_alts(word, box):
 	translations = []
 	for w in box:
-		if word == w[0]:
-			translations.append(w[1])
+		try:
+			if word == w[0]:
+				translations.append(w[1])
+		except:
+			print("Error with csv file :", box )
 	return translations
 
 def is_correct(answer, alternates):
@@ -30,6 +33,13 @@ def purge_boxes(dir, pattern):
 #			print("Deleting...",os.path.join(dir, f))
 			os.remove(os.path.join(dir, f))
 
+def build_group_list(files):
+	temp= []
+	for count, f in enumerate(files):
+		fname = f.split('.')
+		temp.append([count,fname[0],f])
+	return temp
+
 
 cwd = os.getcwd()
 
@@ -38,19 +48,24 @@ if mode == "T":
 	print("Testing mode")
 	purge_boxes(cwd,'^box\d.json')
 
+files = glob.glob('*.csv')
+
+filelist = build_group_list(files)
+for f in filelist:
+	print(f[0],f[1])
+
+group = int(input("Select a group of words to study. :"))
+
 current_box = input('Which box would you like to study? (1,2,3): ')
 current_box_int = int(current_box)
 
 print("Working on box " + current_box)
-current_box_path = cwd + '\\box' + current_box + '.json'
-words_path = cwd + '\\words.csv'
+current_box_path = cwd + '\\' + filelist[group][1] + current_box + '.json'
+words_path = cwd + '\\' + filelist[group][2]
 
-#print(current_box_path)
 box = []
 
 try:
-
-#	print("opening box ")
 
 	# read file
 	with open(current_box_path, 'r') as json_file:
@@ -63,7 +78,7 @@ try:
 except:
 # 	No box 1! Might be test mode which deletes boxes.
 	if current_box_int == 1:
-		print("Creating box1 from words.csv")
+		print("Creating box1 from", words_path)
 		with open(words_path, newline='',encoding='utf-8') as csvfile:
 			box = list(csv.reader(csvfile, delimiter=','))
 
@@ -73,11 +88,6 @@ except:
 			for word in box:
 				flipped.append([word[1],word[0]])
 			box = flipped.copy()
-#			print(box[0])
-#
-# 			sys.exit()
-
-
 
 		#find words with multiple translations, in words .csv more than once.
 		with_alternates = []
@@ -85,12 +95,10 @@ except:
 			alts = get_alts(i[0],box)
 			new = [i[0],alts]
 			with_alternates.append(new)
-#			if len(alts) > 1:
-#				print(new)
-#				print('\n')
 
 		box = with_alternates.copy()
 
+# Create box 1 json file.
 		with open(current_box_path, 'w', encoding='utf-8') as f:
 			json.dump(with_alternates, f, ensure_ascii=False, indent=3)
 
@@ -174,7 +182,7 @@ if len(need_practice) > 1 :
 		#Move items to
 		print("Moving these words back to box ", str(current_box_int - 1))
 
-		box_path = cwd + '\\box' + str(current_box_int - 1) + '.json'
+		box_path = cwd + '\\' +filelist[group][1] + str(current_box_int - 1) + '.json'
 		other_box = []
 		with open(box_path, 'r') as json_file:
 			data=json_file.read()
@@ -198,7 +206,7 @@ if len(know) > 1 :
 	if current_box_int < 3:
 		print("\nMoving these words to box ", str(current_box_int + 1))
 
-		box_path = cwd + '\\box' + str(current_box_int + 1) + '.json'
+		box_path = cwd + '\\' + filelist[group][1] + str(current_box_int + 1) + '.json'
 		other_box = []
 		try:
 			with open(box_path, 'r') as json_file:
