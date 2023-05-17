@@ -6,8 +6,8 @@ The script loops through the list of words and asks user to translate eash word.
 
 The user should study box 1 every day, study box 2 every 2 days, study box 3 every 5 days. This script is based on the [Leitner System](https://en.wikipedia.org/wiki/Leitner_system).
 
-##Features
-* Supports multiple groups of boxes for different types of lessons (numbers, frequency)
+## Features
+* Supports multiple groups of card boxes for different types of lessons (numbers, frequency)
 * Supports review mode to simply list the first 20 words in the box.
 
 ## Running script

@@ -164,7 +164,7 @@ try:
 			for trans in translations:
 				answer = input('\t The translation is: ')
 				if is_correct(answer, translations):
-					print('Excellent!', translations, end='\n\n')
+					print('Excellent!', end='\n\n')
 					number_correct += 1
 				else:
 					print('Boo!')
