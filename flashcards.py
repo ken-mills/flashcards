@@ -6,6 +6,7 @@ import re
 import sys
 import json
 import glob
+import random
 
 def get_alts(word, box):
 	translations = []
@@ -23,7 +24,7 @@ def is_correct(answer, alternates):
 	return False
 
 def has_multiple_translations(item):
-	if len(item[1]) > 1:
+	if len(item) > 1:
 		return True
 	return False
 
@@ -38,6 +39,21 @@ def build_group_list(files):
 	for count, f in enumerate(files):
 		fname = f.split('.')
 		temp.append([count,fname[0],f])
+	return temp
+
+def has_only_short_answers(possible_translations):
+	for p in possible_translations:
+		if len(p.split()) > 2:
+			return False
+	return True
+
+def build_distractor_list(current_translation, box):
+	temp = []
+	for d in box:
+		dd = d[1][0]
+		l = len(dd.split())
+		if l > 2 and dd != current_translation :
+			temp.append(dd)
 	return temp
 
 
@@ -129,23 +145,55 @@ try:
 		translation_index = 0
 		number_correct = 0
 		number_wrong = 0
+		distractor_list = []
 #		if a word has multiple translations, ask about each one.
 #		when all translations are correct then move to the next box.
 #		otherwise word remains in the box with all translations.
-		if has_multiple_translations:
-			print()
-			print(word, 'has',number_of_translations,'translations.')
+#		if a word has a long translation, build a list of distractors, display them,
+#		and ask the user to pick the correct one.
 
-		for trans in translations:
-			answer = input('\t translation: ')
-			if is_correct(answer, translations):
-				print('Excellent!',end='\n')
+		if has_only_short_answers(translations):
+
+			if has_multiple_translations(translations):
+				print()
+				print(word, 'has',number_of_translations,'translations.')
+			else:
+				print()
+				print(word, 'has one translation.')
+
+			for trans in translations:
+				answer = input('\t The translation is: ')
+				if is_correct(answer, translations):
+					print('Excellent!', translations, end='\n\n')
+					number_correct += 1
+				else:
+					print('Boo!')
+					number_wrong += 1
+					if number_wrong <= number_of_translations:
+						print("here you go:", translations, end='\n\n')
+
+		else:
+			#assuming a long answer has only one answer, show 4
+			distractors = []
+			distractor_list = build_distractor_list(translations[0], box)
+
+			distractors.append(translations[0])
+			x = slice(3)
+			distractors.extend(distractor_list[x])
+			random.shuffle(distractors)
+
+			for count, distractor in enumerate(distractors):
+				print(count, distractor)
+			print('Translate: ', word )
+			answer = int(input('Pick correct answer:'))
+
+			if distractors.index(translations[0]) == answer:
+				print('Excellent!', translations[0], end='\n\n')
 				number_correct += 1
 			else:
-				print('Boo!\n')
+				print('Boo!',translations[0], end='\n')
 				number_wrong += 1
-				if number_wrong <= number_of_translations:
-					print("here you go:", translations, end='\n')
+
 
 		if number_correct == number_of_translations:
 			know.append(box[i])
@@ -175,7 +223,7 @@ if False:
 #list of words that need practice
 if len(need_practice) > 1 :
 	print()
-	print("\nYou need to practice these words again: ")
+	print("\nYou need to practice these words/phrases again: ")
 	for practice in need_practice:
 		print(practice[0], ',', end='')
 	if current_box_int > 1:
@@ -200,7 +248,7 @@ if len(need_practice) > 1 :
 # process the list of words you know
 if len(know) > 1 :
 	print()
-	print("You seem to know these words: ", end='')
+	print("You seem to know these words/phrases: ", end='')
 	for each_word in know:
 		print(each_word[0], ',', end='')
 	if current_box_int < 3:
