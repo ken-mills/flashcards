@@ -2,6 +2,7 @@
 
 import csv
 import os
+import platform
 import re
 import sys
 import json
@@ -58,6 +59,8 @@ def build_distractor_list(current_translation, box):
 
 
 cwd = os.getcwd()
+print("os name =", os.name)
+print("system =", platform.system())
 
 mode = sys.argv[1]
 if mode == "T":
@@ -76,8 +79,9 @@ current_box = input('Which box would you like to study? (1,2,3): ')
 current_box_int = int(current_box)
 
 print("Working on box " + current_box)
-current_box_path = cwd + '\\' + filelist[group][1] + current_box + '.json'
-words_path = cwd + '\\' + filelist[group][2]
+box_file = filelist[group][1] + current_box + '.json'
+current_box_path = os.sep.join ([cwd , box_file] )
+words_path = os.sep.join([cwd , filelist[group][2]])
 
 box = []
 
